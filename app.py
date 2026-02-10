@@ -1,54 +1,59 @@
 import streamlit as st
 import time
-import pandas as pd
 from datetime import datetime
 
-# Configuration Expert du Dashboard
+# 1. CONFIGURATION ÉLITE
 st.set_page_config(
     page_title="PRO Focus AI - Suite Commerciale",
     page_icon="💰",
     layout="wide"
 )
 
-# Style CSS personnalisé pour un look Premium
+# Style Premium
 st.markdown("""
     <style>
     .main { background-color: #0E1117; }
     .stButton>button { width: 100%; border-radius: 5px; height: 3em; background-color: #1fd363; color: black; font-weight: bold; }
-    .stTextInput>div>div>input { background-color: #262730; color: white; }
     </style>
     """, unsafe_allow_html=True)
+
+# 2. SÉCURITÉ ANTI-ERREUR (Nettoyage de la mémoire)
+if 'taches' not in st.session_state or (len(st.session_state.taches) > 0 and isinstance(st.session_state.taches[0], str)):
+    st.session_state.taches = []
 
 st.title("🚀 PRO Focus AI : L'Elite de la Productivité")
 st.write("---")
 
-# --- ARCHITECTURE COMMERCIALE : 3 COLONNES ---
+# 3. ARCHITECTURE COMMERCIALE
 col1, col2, col3 = st.columns([1, 1, 1])
 
 with col1:
     st.header("📋 Gestion de Projet")
-    if 'taches' not in st.session_state:
-        st.session_state.taches = []
     
     nouvelle_tache = st.text_input("Objectif prioritaire :")
     priorite = st.selectbox("Niveau de priorité", ["Standard", "Urgent 🔥", "Critique 💎"])
     
     if st.button("Enregistrer l'objectif"):
         if nouvelle_tache:
-            st.session_state.taches.append({"nom": nouvelle_tache, "priorite": priorite, "heure": datetime.now().strftime("%H:%M")})
+            # On enregistre un dictionnaire propre
+            st.session_state.taches.append({
+                "nom": nouvelle_tache, 
+                "priorite": priorite, 
+                "heure": datetime.now().strftime("%H:%M")
+            })
             st.rerun()
 
+    # Affichage sécurisé
     for i, t in enumerate(st.session_state.taches):
         with st.expander(f"{t['priorite']} - {t['nom']}"):
-            st.write(f"Ajouté à : {t['heure']}")
+            st.write(f"Ajouté à : {t.get('heure', 'Heure inconnue')}")
             if st.button("Marquer comme terminé", key=f"done_{i}"):
                 st.session_state.taches.pop(i)
-                st.balloons()
                 st.rerun()
 
 with col2:
     st.header("⚡ Turbo Focus")
-    duree = st.select_slider("Session de travail (min)", options=[15, 25, 45, 60, 90], value=25)
+    duree = st.select_slider("Session de travail (min)", options=[1, 15, 25, 45, 60, 90], value=25)
     
     if st.button("LANCER LE MODE ELITE"):
         sec = duree * 60
@@ -61,19 +66,17 @@ with col2:
             progress_bar.progress(1 - (i / sec))
             time.sleep(1)
         
-        st.success("SESSION TERMINÉE - REVENU GÉNÉRÉ ESTIMÉ : +50€")
-        # Son d'alerte
-        st.markdown('<audio autoplay><source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" type="audio/mpeg"></audio>', unsafe_allow_html=True)
+        st.balloons()
+        st.success("SESSION TERMINÉE - REVENU ESTIMÉ : +50€")
+        st.markdown('<audio autoplay><source src="https://www.soundjay.com/buttons/sounds/beep-07a.mp3" type="audio/mpeg"></audio>', unsafe_allow_html=True)
 
 with col3:
     st.header("🤖 Coach IA (Beta)")
-    st.info("L'IA analyse votre rythme de travail pour maximiser vos profits.")
-    st.write("**Conseil du jour :**")
+    st.info("L'IA analyse votre rythme.")
     if len(st.session_state.taches) > 3:
-        st.warning("Trop de tâches ! Concentrez-vous sur l'objectif 'Critique' pour éviter le burnout.")
+        st.warning("⚠️ Trop de tâches ! Concentrez-vous sur l'objectif Critique.")
     else:
-        st.success("Charge de travail optimale. Votre cerveau est à 100% de ses capacités.")
+        st.success("✅ Charge de travail optimale.")
 
-# --- FOOTER COMMERCIAL ---
 st.write("---")
-st.caption("© 2026 Neil Corporation - Version Enterprise Cloud de Haute Performance")
+st.caption("© 2026 Neil Corporation - Version Enterprise Cloud v2.0")
