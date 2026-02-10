@@ -25,6 +25,16 @@ for i, tache in enumerate(st.session_state.taches):
 
 st.divider()
 
+# Code pour jouer un son de notification (Ding !)
+st.markdown(
+    """
+    <audio autoplay>
+      <source src="https://www.soundjay.com/buttons/sounds/beep-07a.mp3" type="audio/mpeg">
+    </audio>
+    """,
+    unsafe_allow_html=True
+)
+
 # --- SECTION 2 : MINUTEUR ---
 st.subheader("⏳ Mode Focus")
 duree_min = st.sidebar.slider("Minutes", 1, 60, 25)
