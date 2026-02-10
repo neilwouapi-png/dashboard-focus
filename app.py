@@ -1,51 +1,79 @@
 import streamlit as st
 import time
+import pandas as pd
+from datetime import datetime
 
-st.set_page_config(page_title="Focus Dashboard", page_icon="🧠")
-
-st.title("🚀 Dashboard Anti-Distraction")
-
-# --- SECTION 1 : TO-DO LIST (Mémoire) ---
-st.subheader("✅ Mes Tâches Prioritaires")
-
-if 'taches' not in st.session_state:
-    st.session_state.taches = []
-
-nouvelle_tache = st.text_input("Ajoute une tâche importante et appuie sur Entrée :")
-if nouvelle_tache:
-    if nouvelle_tache not in st.session_state.taches:
-        st.session_state.taches.append(nouvelle_tache)
-
-for i, tache in enumerate(st.session_state.taches):
-    col1, col2 = st.columns([0.8, 0.2])
-    col1.write(f"🔹 {tache}")
-    if col2.button("Fait", key=f"btn_{i}"):
-        st.session_state.taches.pop(i)
-        st.rerun()
-
-st.divider()
-
-# Code pour jouer un son de notification (Ding !)
-st.markdown(
-    """
-    <audio autoplay>
-      <source src="https://www.soundjay.com/buttons/sounds/beep-07a.mp3" type="audio/mpeg">
-    </audio>
-    """,
-    unsafe_allow_html=True
+# Configuration Expert du Dashboard
+st.set_page_config(
+    page_title="PRO Focus AI - Suite Commerciale",
+    page_icon="💰",
+    layout="wide"
 )
 
-# --- SECTION 2 : MINUTEUR ---
-st.subheader("⏳ Mode Focus")
-duree_min = st.sidebar.slider("Minutes", 1, 60, 25)
+# Style CSS personnalisé pour un look Premium
+st.markdown("""
+    <style>
+    .main { background-color: #0E1117; }
+    .stButton>button { width: 100%; border-radius: 5px; height: 3em; background-color: #1fd363; color: black; font-weight: bold; }
+    .stTextInput>div>div>input { background-color: #262730; color: white; }
+    </style>
+    """, unsafe_allow_html=True)
 
-if st.button('Démarrer le Focus'):
-    duree_sec = duree_min * 60
-    affichage = st.empty()
-    barre = st.progress(0)
-    for s in range(duree_sec, -1, -1):
-        m, sec = divmod(s, 60)
-        affichage.metric("Temps restant", f"{m:02d}:{sec:02d}")
-        barre.progress(1 - (s / duree_sec))
-        time.sleep(1)
-    st.balloons()
+st.title("🚀 PRO Focus AI : L'Elite de la Productivité")
+st.write("---")
+
+# --- ARCHITECTURE COMMERCIALE : 3 COLONNES ---
+col1, col2, col3 = st.columns([1, 1, 1])
+
+with col1:
+    st.header("📋 Gestion de Projet")
+    if 'taches' not in st.session_state:
+        st.session_state.taches = []
+    
+    nouvelle_tache = st.text_input("Objectif prioritaire :")
+    priorite = st.selectbox("Niveau de priorité", ["Standard", "Urgent 🔥", "Critique 💎"])
+    
+    if st.button("Enregistrer l'objectif"):
+        if nouvelle_tache:
+            st.session_state.taches.append({"nom": nouvelle_tache, "priorite": priorite, "heure": datetime.now().strftime("%H:%M")})
+            st.rerun()
+
+    for i, t in enumerate(st.session_state.taches):
+        with st.expander(f"{t['priorite']} - {t['nom']}"):
+            st.write(f"Ajouté à : {t['heure']}")
+            if st.button("Marquer comme terminé", key=f"done_{i}"):
+                st.session_state.taches.pop(i)
+                st.balloons()
+                st.rerun()
+
+with col2:
+    st.header("⚡ Turbo Focus")
+    duree = st.select_slider("Session de travail (min)", options=[15, 25, 45, 60, 90], value=25)
+    
+    if st.button("LANCER LE MODE ELITE"):
+        sec = duree * 60
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+        
+        for i in range(sec, -1, -1):
+            m, s = divmod(i, 60)
+            status_text.metric("TEMPS RESTANT", f"{m:02d}:{s:02d}")
+            progress_bar.progress(1 - (i / sec))
+            time.sleep(1)
+        
+        st.success("SESSION TERMINÉE - REVENU GÉNÉRÉ ESTIMÉ : +50€")
+        # Son d'alerte
+        st.markdown('<audio autoplay><source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" type="audio/mpeg"></audio>', unsafe_allow_html=True)
+
+with col3:
+    st.header("🤖 Coach IA (Beta)")
+    st.info("L'IA analyse votre rythme de travail pour maximiser vos profits.")
+    st.write("**Conseil du jour :**")
+    if len(st.session_state.taches) > 3:
+        st.warning("Trop de tâches ! Concentrez-vous sur l'objectif 'Critique' pour éviter le burnout.")
+    else:
+        st.success("Charge de travail optimale. Votre cerveau est à 100% de ses capacités.")
+
+# --- FOOTER COMMERCIAL ---
+st.write("---")
+st.caption("© 2026 Neil Corporation - Version Enterprise Cloud de Haute Performance")
